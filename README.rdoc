@@ -16,11 +16,11 @@ For example, you could create a ParseTree like so:
  
 == Parameter order
 
-	The first parameter is the method as a String or Symbol, this never changes.
+The first parameter is the method as a String or Symbol, this never changes.
 	
-	The second parameter is the object that the method will be called on. This can either be a normal object, or an unevaluated ParseTree for delayed recursive evaluation.
+The second parameter is the object that the method will be called on. This can either be a normal object, or an unevaluated ParseTree for delayed recursive evaluation.
 	
-	Any subsequent parameters can either be normal objects, or ParseTrees, and will be passed as arguments to the method call.
+Any subsequent parameters can either be normal objects, or ParseTrees, and will be passed as arguments to the method call.
  
 == Usage
  
@@ -42,7 +42,9 @@ This is equivalent to the following CLOS pseudocode:
  
 	(* (+ 1 3) 23) # => 92
 	
-Similar to 'quote' or '`' in Lisp, you can quote ParseTrees with 'q' for later use. This concept is similar to that of passing around functions as closures:
+Note: The difference is that in the Ruby version, the + method is actually called on the 1 object, whereas in Lisp the + method would be a global function. However, when using CLOS the parameter order syntax is nearly identical to the Ruby version presented here.
+	
+Similar to 'quote' or '`' in Lisp, you can quote ParseTrees with 'q' for later use. This may remind you of passing around functions as closures:
 	parse_tree = q(:*, e(:+, 1, 3), 23) # => [:*, 4, 23]
 	parse_tree.evaluate # => 92
 	
