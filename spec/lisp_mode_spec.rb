@@ -9,7 +9,7 @@ describe LispMode do
     Object::cry_mode.should == LispMode
   end
   
-  it "should define a 'q' quoate method on Object" do
+  it "should define a 'q' quote method on Object" do
     q(:+, 1, 3).should be_kind_of(ParseTree)
     q(:+, 1, 3).should == [:+, 1, 3]
   end
