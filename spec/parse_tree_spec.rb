@@ -1,5 +1,11 @@
 require File.join(File.dirname(__FILE__), "..", "parse_tree")
 
+describe ParseTree, ".new" do
+  it "should be a kind of Array" do
+    ParseTree.new.should be_kind_of(Array)
+  end
+end
+
 describe ParseTree, "#node_method" do
   it "should be nil if the list is empty" do
     ParseTree.new.node_method.should be_nil
@@ -139,5 +145,10 @@ describe ParseTree, "#evaluate, for complex mixed parameters" do
             ParseTree.new(:+, 1, 2) ) )
     )           
     parse_tree.evaluate.should == 15
+  end
+  
+  it "should work with Arrays" do
+    parse_tree = ParseTree.new( :+, [1, 2], ParseTree.new(:new, Array, 1, 3) )
+    parse_tree.evaluate.should == [1, 2, 3]
   end
 end
