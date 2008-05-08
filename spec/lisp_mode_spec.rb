@@ -9,12 +9,7 @@ describe Cry::LispMode do
     cry_mode.should == Cry::LispMode
   end
   
-  it "should define a 'q' quote method on Object" do
-    q(:+, 1, 3).should be_kind_of(ParseTree)
-    q(:+, 1, 3).should == [:+, 1, 3]
-  end
-  
   it "should define a 'e' evaluate method on Object" do
-    e(:*, q(:+, 1, 3), 23).should == 92
+    e(:*, e(:+, 1, 3), 23).should == 92
   end
 end

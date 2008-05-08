@@ -152,8 +152,12 @@ describe ParseTree, "#evaluate, for complex mixed parameters" do
     parse_tree.evaluate.should == [1, 2, 3]
   end
   
+  it "should work with lambdas" do
+    ParseTree.new(:call, lambda{|from, backwards_greeting| ParseTree.new(:+, ParseTree.new(:join, ParseTree.new(:reverse, backwards_greeting), " "), from).evaluate }, " from lisp", ["world", "hello"]).evaluate.should == "hello world from lisp"
+  end
+  
   it "should work with the main 'self' runtime" do    
-    ParseTree.new(:instance_variable_set, self, '@parse_tree', ParseTree.new(:*, ParseTree.new(:+, 1, 3), 23) ).evaluate
-  	ParseTree.new(:evaluate, @parse_tree)
+    ParseTree.new(:instance_variable_set, self, '@parse_tree', 'ParseTree.new(:*, ParseTree.new(:+, 1, 3), 23).evaluate' ).evaluate
+  	ParseTree.new(:eval, Kernel, @parse_tree).evaluate.should == 92
   end
 end

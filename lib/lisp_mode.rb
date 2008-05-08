@@ -5,11 +5,7 @@ module Cry
     end
   
     def e(*args)
-      q(*args).evaluate
-    end
-  
-    def q(*args)
-      ParseTree.new(*args)
+      ParseTree.new(*args).evaluate
     end
   end
 end
