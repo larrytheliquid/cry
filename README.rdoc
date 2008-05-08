@@ -1,0 +1,52 @@
+= Cry
+ 
+A CommonLisp CLOS-like ParseTree in Ruby... read it and weep.
+
+For example, you could create a ParseTree like so:
+ 
+  parse_tree = ParseTree.new(:+, 1, 3)
+  
+... then evaluate it:
+
+	parse_tree.evaluate #	=> 4
+ 
+... You can also create and evaluate more complex ParseTrees:
+
+	ParseTree.new( :+, ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) ), ParseTree.new(:+, 1, 3) ).evaluate # => 9
+ 
+== Parameter order
+
+	The first parameter is the method as a String or Symbol, this never changes.
+	
+	The second parameter is the object that the method will be called on. This can either be a normal object, or an unevaluated ParseTree for delayed recursive evaluation.
+	
+	Any subsequent parameters can either be normal objects, or ParseTrees, and will be passed as arguments to the method call.
+ 
+== Usage
+ 
+  require 'cry'
+ 
+The default is RubyMode, which does not pollute the Object class. Use ParseTrees in this mode as described above:
+
+	ParseTree.new(:*, ParseTree.new(:+, 1, 3).evaluate, 23).evaluate # => 92
+
+To make using the ParseTrees more enjoyable, change to LispMode:
+ 
+  Cry.mode = LispMode
+ 
+Now you can use an 'e' method to evaluate ParseTrees:
+ 
+  e(:*, e(:+, 1, 3), 23) # => 92
+ 
+This is equivalent to the following CLOS pseudocode:
+ 
+	(* (+ 1 3) 23) # => 92
+	
+Similar to 'quote' or '`' in Lisp, you can quote ParseTrees with 'q' for later use. This concept is similar to that of passing around functions as closures:
+	parse_tree = q(:*, e(:+, 1, 3), 23) # => [:*, 4, 23]
+	parse_tree.evaluate # => 92
+	
+== Author
+
+Author:: Larry Diehl (larrytheliquid)
+Website:: http://larrytheliquid.com
