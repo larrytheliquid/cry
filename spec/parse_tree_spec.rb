@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), "..", "parse_tree")
+require File.join(File.dirname(__FILE__), "..", "cry")
 
 describe ParseTree, ".new" do
   it "should be a kind of Array" do
