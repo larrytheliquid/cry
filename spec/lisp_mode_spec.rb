@@ -1,12 +1,12 @@
 require File.join(File.dirname(__FILE__), "..", "cry")
 
-describe LispMode do
+describe Cry::LispMode do
   before(:each) do
-    Cry.mode = LispMode
+    Cry.mode = Cry::LispMode
   end
   
-  it "should put Object into LispMode" do    
-    Object::cry_mode.should == LispMode
+  it "should put main into LispMode" do    
+    cry_mode.should == Cry::LispMode
   end
   
   it "should define a 'q' quote method on Object" do

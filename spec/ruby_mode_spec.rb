@@ -1,11 +1,11 @@
 require File.join(File.dirname(__FILE__), "..", "cry")
 
-describe RubyMode, ".cry_mode" do
+describe Cry::RubyMode, ".cry_mode" do
   before(:each) do
-    Cry.mode = RubyMode
+    Cry.mode = Cry::RubyMode
   end
   
-  it "should put Object into RubyMode" do    
-    Object::cry_mode.should == RubyMode
+  it "should put main into RubyMode" do    
+    cry_mode.should == Cry::RubyMode
   end
 end

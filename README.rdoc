@@ -26,13 +26,13 @@ Any subsequent parameters can either be normal objects, or ParseTrees, and will 
  
   require 'cry'
  
-The default is RubyMode, which does not pollute the Object class. Use ParseTrees in this mode as described above:
+By default no mode is set. Use ParseTrees in this mode as described above in this case:
 
 	ParseTree.new(:*, ParseTree.new(:+, 1, 3).evaluate, 23).evaluate # => 92
 
 To make using the ParseTrees more enjoyable, change to LispMode:
  
-  Cry.mode = LispMode
+  Cry.mode = Cry::LispMode
  
 Now you can use an 'e' method to evaluate ParseTrees:
  
@@ -54,9 +54,9 @@ Which is similar to the Lisp code:
 	(setf parse-tree '(* (+ 1 3) 23))
 	(eval parse-tree) # => 92
 	
-Of course, if you really want to Cry you make it even closer to the Lisp implementation:
+Of course, if you really want to Cry you can make it even closer to the Lisp implementation:
 
-	e( :instance_variable_set, self, '@parse_tree', q(:*, q(:+, 1, 3), 23) )
+	e(:instance_variable_set, self, '@parse_tree', q(:*, q(:+, 1, 3), 23))
 	e(:evaluate, @parse_tree)
 	
 == Author
