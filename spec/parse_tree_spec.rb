@@ -1,58 +1,107 @@
 require File.join(File.dirname(__FILE__), "..", "parse_tree")
 
 describe ParseTree, "#nodes" do  
-  it "should raise an Exception if not initialized" do
-    lambda {ParseTree.new}.should raise_error
+  it "should be empty if not initialized" do
+    ParseTree.new.should be_empty
   end
   
-  it "should return an arary of nodes when initialized" do
-    ParseTree.new([{:+ => 1}, 2]).nodes.should == [{:+ => 1}, 2]
+  it "should initialize as an Array of nodes" do
+    ParseTree.new(:+, 1, 2).nodes.should == [:+, 1, 2]
   end
   
-  it "should be able to add nodes" do
-    parse_tree = ParseTree.new([{:+ => 1}])
-    parse_tree.nodes << 2
-    parse_tree.nodes.should == [{:+ => 1}, 2]
+  it "should work with added nodes" do
+    parse_tree = ParseTree.new(:+, 1)
+    parse_tree << 2
+    parse_tree.nodes.should == [:+, 1, 2]
   end
 end
 
-describe ParseTree, "#evaluate, with terminal parameters and objects" do
-  it "should be able to evaluate an expression for a parse tree with no parameters" do
-    parse_tree = ParseTree.new( [{:to_s => 1}] )            
+describe ParseTree, "#node_method" do
+  it "should be nil if the list is empty" do
+    ParseTree.new.node_method.should be_nil
+  end
+  
+  it "should be the first element as a symbol if the list has one element" do
+    ParseTree.new("self").node_method.should == :self
+  end
+  
+  it "should be the first element as a symbol if the list has more than one element" do
+    ParseTree.new(:+, 1, 2).node_method.should == :+
+  end
+end
+
+describe ParseTree, "#node_object" do
+  it "should be nil if the list is empty" do
+    ParseTree.new.node_object.should be_nil
+  end
+  
+  it "should be nil if the list has one element" do
+    ParseTree.new(:self).node_object.should be_nil
+  end
+  
+  it "should be the second element if the list has more than one element, and it is a terminal" do
+    ParseTree.new(:+, 1, 2).node_object.should == 1
+  end
+  
+  it "should be the second element evaluated if the list has more than one element, and it is a ParseTree" do
+    ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2).node_object.should == 3
+  end
+end
+
+describe ParseTree, "#node_arguments" do
+  it "should be empty if the list is empty" do
+    ParseTree.new.node_arguments.should be_empty
+  end
+  
+  it "should be emtpy if the list has one element" do
+    ParseTree.new(:self).node_arguments.should be_empty
+  end
+  
+  it "should be empty if the list has two elements" do
+    ParseTree.new(:to_s, 1).node_arguments.should be_empty
+  end
+  
+  it "should return the remainder of the elements if the list has more than two elements, and its elements only have terminals" do
+    ParseTree.new(:new, Array, 2, 1).node_arguments.should == [2, 1]
+  end
+  
+  it "should return the remainder of the elements evaluated if the list has more than two elements, and its elements have ParseTrees" do
+    ParseTree.new(:new, Array, 2, ParseTree.new(:+, 1, 2)).node_arguments.should == [2, 3]
+  end
+end
+
+describe ParseTree, "#evaluate, with terminal object and parameters" do
+  it "should be able to evaluate an expression for a simple parse tree" do
+    parse_tree = ParseTree.new(:to_s, 1)            
     parse_tree.evaluate.should == "1"
   end
   
-  it "should be able to evaluate an expression for a parse tree with a parameter" do
-    parse_tree = ParseTree.new( [{:+ => 1}, 2] )            
-    parse_tree.evaluate.should == 3
-  end
-  
-  it "should be able to evaluate an expression for a parse tree with multiple parameters" do
-    parse_tree = ParseTree.new( [{:new => Array}, 2, 1] )            
+  it "should be able to evaluate an expression for a complex parse tree" do
+    parse_tree = ParseTree.new(:new, Array, 2, 1)            
     parse_tree.evaluate.should == [1, 1]
   end
 end
 
-describe ParseTree, "#evaluate, with function parameters" do
+describe ParseTree, "#evaluate, with terminal object, and ParseTree parameters" do
   it "should be able to evaluate an expression for a simple parse tree" do
-    parse_tree = ParseTree.new( [ {:+ => 1}, [{:* => 2}, 2] ] )            
+    parse_tree = ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) )            
     parse_tree.evaluate.should == 5
   end
   
   it "should be able to evaluate an expression for a complex parse tree" do
-    parse_tree = ParseTree.new( [ {:+ => 2}, [{:+ => 1}, [{:* => 2}, 2]] ] )                
+    parse_tree = ParseTree.new( :+, 2, ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) ) )                
     parse_tree.evaluate.should == 7
   end
 end
 
-describe ParseTree, "#evaluate, with function objects" do
+describe ParseTree, "#evaluate, with terminal parameters, and ParseTree object" do
   it "should be able to evaluate an expression for a simple parse tree" do
-    parse_tree = ParseTree.new( [ {:+ => 1}, [{:* => 2}, 2] ] )            
+    parse_tree = ParseTree.new( :+, ParseTree.new(:*, 2, 2), 1 )            
     parse_tree.evaluate.should == 5
   end
   
   it "should be able to evaluate an expression for a complex parse tree" do
-    parse_tree = ParseTree.new( [ {:+ => 2}, [{:+ => 1}, [{:* => 2}, 2]] ] )                
+    parse_tree = ParseTree.new( :+, ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) ), 2 )                
     parse_tree.evaluate.should == 7
   end
 end
@@ -60,10 +109,10 @@ end
 describe ParseTree, "#evaluate, for complex mixed parameters" do
   it "should be able to evaluate" do
     parse_tree = ParseTree.new( 
-      [{:+ => [{:+ => 1}, 2]}, 
-        [{:+ => [{:+ => 1}, 2]}, 
-          [{:* => [{:+ => 1}, 2]}, 
-            [{:+ => 1}, 2]]]] 
+      :+, ParseTree.new(:+, 1, 2), 
+        ParseTree.new(:+, ParseTree.new(:+, 1, 2), 
+          ParseTree.new(:*, ParseTree.new(:+, 1, 2), 
+            ParseTree.new(:+, 1, 2) ) )
     )           
     parse_tree.evaluate.should == 15
   end

@@ -1,33 +1,26 @@
-# make an "e" method to evaluate a parse tree
-# make a "q" method to quote a parse tree
-# make a "p" method to create a new parse tree
-
-class ParseTree
-  def initialize(nodes)
-    @nodes = nodes
+class ParseTree < Array
+  def initialize(*args)
+    super(args.to_ary)
   end  
-  attr_accessor :nodes
-  def evaluate(array = nodes)
-    node_method = array.first.keys.first.to_sym
-    node_object = if array.first.values.first.is_a?(Array)
-      evaluate(array.first.values.first)
-    else
-      array.first.values.first
-    end
-    node_arguments = []
-    array.rest.each do |element|
-      node_arguments << if element.is_a?(Array)
-        evaluate(element)          
-      else
-        element
-      end
-    end
+  alias_method :nodes, :to_ary
+  
+  def evaluate
     node_object.send( *([node_method] + node_arguments) )
   end
-end
-
-class Array
-  def rest
-    self[1..size]
+  
+  def node_method
+    self.first.to_sym unless empty?
   end
+  
+  def node_object
+    self[1].is_a?(ParseTree) ? self[1].evaluate : self[1] unless size < 2
+  end
+  
+  def node_arguments
+    unless size < 2
+      self[2..size].map{|argument| argument.is_a?(ParseTree) ? argument.evaluate : argument }
+    else
+      []
+    end    
+  end  
 end
