@@ -151,4 +151,9 @@ describe ParseTree, "#evaluate, for complex mixed parameters" do
     parse_tree = ParseTree.new( :+, [1, 2], ParseTree.new(:new, Array, 1, 3) )
     parse_tree.evaluate.should == [1, 2, 3]
   end
+  
+  it "should work with the main 'self' runtime" do    
+    ParseTree.new(:instance_variable_set, self, '@parse_tree', ParseTree.new(:*, ParseTree.new(:+, 1, 3), 23) ).evaluate
+  	ParseTree.new(:evaluate, @parse_tree)
+  end
 end

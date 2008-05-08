@@ -49,10 +49,15 @@ Similar to 'quote' or '`' in Lisp, you can quote ParseTrees with 'q' for later u
 	parse_tree = q(:*, q(:+, 1, 3), 23)
 	parse_tree.evaluate # => 92
 	
-Which is similar to:
+Which is similar to the Lisp code:
 
 	(setf parse-tree '(* (+ 1 3) 23))
 	(eval parse-tree) # => 92
+	
+Of course, if you really want to Cry you make it even closer to the Lisp implementation:
+
+	e( :instance_variable_set, self, '@parse_tree', q(:*, q(:+, 1, 3), 23) )
+	e(:evaluate, @parse_tree)
 	
 == Author
 
