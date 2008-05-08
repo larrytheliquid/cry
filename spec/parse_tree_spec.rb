@@ -1,21 +1,5 @@
 require File.join(File.dirname(__FILE__), "..", "parse_tree")
 
-describe ParseTree, "#nodes" do  
-  it "should be empty if not initialized" do
-    ParseTree.new.should be_empty
-  end
-  
-  it "should initialize as an Array of nodes" do
-    ParseTree.new(:+, 1, 2).nodes.should == [:+, 1, 2]
-  end
-  
-  it "should work with added nodes" do
-    parse_tree = ParseTree.new(:+, 1)
-    parse_tree << 2
-    parse_tree.nodes.should == [:+, 1, 2]
-  end
-end
-
 describe ParseTree, "#node_method" do
   it "should be nil if the list is empty" do
     ParseTree.new.node_method.should be_nil
@@ -43,8 +27,26 @@ describe ParseTree, "#node_object" do
     ParseTree.new(:+, 1, 2).node_object.should == 1
   end
   
+  it "should be the second element if the list has more than one element, and it is a ParseTree" do
+    ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2).node_object.should == [:+, 1, 2]
+  end
+end
+
+describe ParseTree, "#evaluate_node_object" do
+  it "should be nil if the list is empty" do
+    ParseTree.new.evaluate_node_object.should be_nil
+  end
+  
+  it "should be nil if the list has one element" do
+    ParseTree.new(:self).evaluate_node_object.should be_nil
+  end
+  
+  it "should be the second element if the list has more than one element, and it is a terminal" do
+    ParseTree.new(:+, 1, 2).evaluate_node_object.should == 1
+  end
+  
   it "should be the second element evaluated if the list has more than one element, and it is a ParseTree" do
-    ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2).node_object.should == 3
+    ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2).evaluate_node_object.should == 3
   end
 end
 
@@ -65,8 +67,30 @@ describe ParseTree, "#node_arguments" do
     ParseTree.new(:new, Array, 2, 1).node_arguments.should == [2, 1]
   end
   
+  it "should return the remainder of the elements if the list has more than two elements, and its elements have ParseTrees" do
+    ParseTree.new(:new, Array, 2, ParseTree.new(:+, 1, 2)).node_arguments.should == [2, [:+, 1, 2]]
+  end
+end
+
+describe ParseTree, "#evaluate_node_arguments" do
+  it "should be empty if the list is empty" do
+    ParseTree.new.evaluate_node_arguments.should be_empty
+  end
+  
+  it "should be emtpy if the list has one element" do
+    ParseTree.new(:self).evaluate_node_arguments.should be_empty
+  end
+  
+  it "should be empty if the list has two elements" do
+    ParseTree.new(:to_s, 1).evaluate_node_arguments.should be_empty
+  end
+  
+  it "should return the remainder of the elements if the list has more than two elements, and its elements only have terminals" do
+    ParseTree.new(:new, Array, 2, 1).evaluate_node_arguments.should == [2, 1]
+  end
+  
   it "should return the remainder of the elements evaluated if the list has more than two elements, and its elements have ParseTrees" do
-    ParseTree.new(:new, Array, 2, ParseTree.new(:+, 1, 2)).node_arguments.should == [2, 3]
+    ParseTree.new(:new, Array, 2, ParseTree.new(:+, 1, 2)).evaluate_node_arguments.should == [2, 3]
   end
 end
 
