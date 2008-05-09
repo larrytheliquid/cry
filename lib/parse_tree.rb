@@ -1,3 +1,6 @@
+# TODO: make a gem
+# TODO: Setter methods
+# TODO: "height" method
 class ParseTree < Array
   def initialize(*args)
     super(args.to_ary)
@@ -26,4 +29,9 @@ class ParseTree < Array
   def evaluate_node_arguments
     node_arguments.map{|argument| argument.is_a?(ParseTree) ? argument.evaluate : argument }
   end
+  
+  def inspect
+    super.sub(/^\[/, "(").sub(/\]$/, ")")
+  end
+  alias_method :to_s, :inspect
 end

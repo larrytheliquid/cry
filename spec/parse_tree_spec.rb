@@ -161,3 +161,20 @@ describe ParseTree, "#evaluate, for complex mixed parameters" do
   	ParseTree.new(:eval, Kernel, @parse_tree).evaluate.should == 92
   end
 end
+
+describe ParseTree, "#inspect, distinguishing itself from Array#inspect" do
+  it "should use parantheses instead of brackets" do
+    p = ParseTree.new(:+, 1, 2)
+    p.inspect.should == "(:+, 1, 2)"
+  end
+  
+  it "should work with Arrays" do
+    p = ParseTree.new(:+, 1, [2, 3])
+    p.inspect.should == "(:+, 1, [2, 3])"
+  end
+  
+  it "should work with nested ParseTrees" do
+    p = ParseTree.new(:+, 1, ParseTree.new(:+, 2, 3))
+    p.inspect.should == "(:+, 1, (:+, 2, 3))"
+  end
+end
