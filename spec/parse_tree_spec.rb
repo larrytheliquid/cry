@@ -20,6 +20,26 @@ describe ParseTree, "#node_method" do
   end
 end
 
+describe ParseTree, "#node_method=" do
+  it "should be able to set on a new ParseTree" do
+    parse_tree = ParseTree.new
+    parse_tree.node_method = :+
+    parse_tree.node_method.should == :+
+  end
+  
+  it "should be able to set when node_method is nil" do
+    parse_tree = ParseTree.new(nil, 1, 2)
+    parse_tree.node_method = :+
+    parse_tree.node_method.should == :+
+  end
+  
+  it "should be able to set when node_method is already set" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_method = :*
+    parse_tree.node_method.should == :*
+  end
+end
+
 describe ParseTree, "#node_object" do
   it "should be nil if the list is empty" do
     ParseTree.new.node_object.should be_nil
@@ -35,6 +55,32 @@ describe ParseTree, "#node_object" do
   
   it "should be the second element if the list has more than one element, and it is a ParseTree" do
     ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2).node_object.should == [:+, 1, 2]
+  end
+end
+
+describe ParseTree, "#node_object=" do
+  it "should be able to set on a new ParseTree" do
+    parse_tree = ParseTree.new
+    parse_tree.node_object = 1
+    parse_tree.node_object.should == 1
+  end
+  
+  it "should be able to set when node_object is nil" do
+    parse_tree = ParseTree.new(:+, nil, 2)
+    parse_tree.node_object = 1
+    parse_tree.node_object.should == 1
+  end
+  
+  it "should be able to set when node_object is already set" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_object = 4
+    parse_tree.node_object.should == 4
+  end
+  
+  it "should be able to set with a ParseTree" do
+    parse_tree = ParseTree.new(:+, nil, 2)
+    parse_tree.node_object = ParseTree.new
+    parse_tree.node_object.should == ParseTree.new
   end
 end
 
@@ -69,12 +115,82 @@ describe ParseTree, "#node_arguments" do
     ParseTree.new(:to_s, 1).node_arguments.should be_empty
   end
   
-  it "should return the remainder of the elements if the list has more than two elements, and its elements only have terminals" do
+  it "should return an Array" do
+    ParseTree.new(:+, 1, 2).node_arguments.class.should == Array
+  end
+  
+  it "should return the single element remainder if the list has more than two elements, and its elements only have terminals" do
+    ParseTree.new(:+, 1, 2).node_arguments.should == [2]
+  end
+  
+  it "should return the multiple element remainder if the list has more than two elements, and its elements only have terminals" do
     ParseTree.new(:new, Array, 2, 1).node_arguments.should == [2, 1]
   end
   
   it "should return the remainder of the elements if the list has more than two elements, and its elements have ParseTrees" do
     ParseTree.new(:new, Array, 2, ParseTree.new(:+, 1, 2)).node_arguments.should == [2, [:+, 1, 2]]
+  end
+end
+
+describe ParseTree, "#node_arguments=" do
+  it "should be able to set on a new ParseTree" do
+    parse_tree = ParseTree.new
+    parse_tree.node_arguments = [1]
+    parse_tree.node_arguments.should == [1]
+  end
+  
+  it "should be able to set when node_arguments is emtpy" do
+    parse_tree = ParseTree.new(:+, 1)
+    parse_tree.node_arguments = [2]
+    parse_tree.node_arguments.should == [2]
+  end
+  
+  it "should be able to set with a single object" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_arguments = 5
+    parse_tree.node_arguments.should == [5]
+  end
+  
+  it "should be able to set with a single element Array" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_arguments = [5]
+    parse_tree.node_arguments.should == [5]
+  end
+  
+  it "should be able to set with a multiple element Array" do
+    parse_tree = ParseTree.new(:new, Array)
+    parse_tree.node_arguments = [2, 1]
+    parse_tree.node_arguments.should == [2, 1]
+  end
+  
+  it "should be able to set when node_object is already set" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_arguments = [4]
+    parse_tree.node_arguments.should == [4]
+  end
+  
+  it "should be able to set with a ParseTree" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_arguments = ParseTree.new
+    parse_tree.node_arguments.should == ParseTree.new
+  end
+  
+  it "should be able to set with a ParseTree in an Array" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.node_arguments = [ParseTree.new]
+    parse_tree.node_arguments.should == [ParseTree.new]
+  end
+  
+  it "should be able to overwrite current arguments with a new Array, when more arguments are added" do
+    parse_tree = ParseTree.new(:foobar, Object, 1, 2)
+    parse_tree.node_arguments = [3, 4, 5]
+    parse_tree.node_arguments.should == [3, 4, 5]
+  end
+  
+  it "should be able to overwrite current arguments with a new Array, when less arguments are added" do
+    parse_tree = ParseTree.new(:foobar, Object, 1, 2, 3)
+    parse_tree.node_arguments = [4, 5]
+    parse_tree.node_arguments.should == [4, 5]
   end
 end
 

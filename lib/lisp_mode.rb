@@ -1,5 +1,3 @@
-# TODO: from_lisp
-# TODO: to_lisp
 module Cry
   module LispMode
     def cry_mode
@@ -11,3 +9,5 @@ module Cry
     end
   end
 end
+# TODO: ParseTree.from_lisp
+# TODO: ParseTree#to_lisp

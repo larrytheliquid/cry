@@ -1,6 +1,3 @@
-# TODO: make a gem
-# TODO: Setter methods
-# TODO: "height" method
 class ParseTree < Array
   def initialize(*args)
     super(args.to_ary)
@@ -14,8 +11,16 @@ class ParseTree < Array
     self.first.to_sym unless empty?
   end
   
+  def node_method=(node_method)
+    self[0] = node_method
+  end
+  
   def node_object
     self[1] unless size < 2
+  end
+  
+  def node_object=(node_object)
+    self[1] = node_object
   end
   
   def evaluate_node_object
@@ -23,7 +28,11 @@ class ParseTree < Array
   end
   
   def node_arguments
-    size >= 2 ? self[2..size] : []
+    size >= 2 ? self[2..size].to_a : Array.new
+  end
+  
+  def node_arguments=(node_arguments)
+    self[2..size] = node_arguments
   end
   
   def evaluate_node_arguments
@@ -35,3 +44,5 @@ class ParseTree < Array
   end
   alias_method :to_s, :inspect
 end
+# TODO: make a gem
+# TODO: ParseTree#height
