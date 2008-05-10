@@ -1,9 +1,5 @@
 module Cry
-  module LispMode
-    def cry_mode
-      LispMode
-    end
-  
+  module LispMode  
     def e(*args)
       ParseTree.new(*args).evaluate
     end
