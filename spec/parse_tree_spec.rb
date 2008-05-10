@@ -274,7 +274,7 @@ describe ParseTree, "#evaluate, for complex mixed parameters" do
   
   it "should work with the main 'self' runtime" do    
     ParseTree.new(:instance_variable_set, self, '@parse_tree', 'ParseTree.new(:*, ParseTree.new(:+, 1, 3), 23).evaluate' ).evaluate
-  	ParseTree.new(:eval, Kernel, @parse_tree).evaluate.should == 92
+    ParseTree.new(:eval, Kernel, @parse_tree).evaluate.should == 92
   end
 end
 
@@ -292,5 +292,74 @@ describe ParseTree, "#inspect, distinguishing itself from Array#inspect" do
   it "should work with nested ParseTrees" do
     p = ParseTree.new(:+, 1, ParseTree.new(:+, 2, 3))
     p.inspect.should == "(:+, 1, (:+, 2, 3))"
+  end
+end
+
+describe ParseTree, "#height" do
+  it "should be 0 for an uninitialized ParseTree" do
+    ParseTree.new.height.should == 0
+  end
+  
+  it "should be 1 for a ParseTree with only a method" do
+    ParseTree.new(:to_s).height.should == 1
+  end
+  
+  it "should be 2 for a ParseTree with a method and an object" do
+    ParseTree.new(:to_s, 1).height.should == 2
+  end
+  
+  it "should work with nil" do
+    ParseTree.new(:to_s, nil).height.should == 2
+  end    
+  
+  it "should compute height for a simple ParseTree with one parameter" do
+    parse_tree = ParseTree.new(:+, 1, 2)
+    parse_tree.height.should == 2
+  end
+  
+  it "should compute height for a simple ParseTree with multiple parameters" do
+    parse_tree = ParseTree.new(:new, Array, 2, 1)
+    parse_tree.height.should == 2
+  end
+  
+  it "should compute height for a simple nested ParseTree with a heavier left side" do
+    parse_tree = ParseTree.new( :+, ParseTree.new(:*, 2, 2), 1 )            
+    parse_tree.height.should == 3
+  end
+  
+  it "should compute height for a simple nested ParseTree with a heavier right side" do
+    parse_tree = ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) )            
+    parse_tree.height.should == 3
+  end
+  
+  it "should compute height for a complex nested ParseTree with a heavier left side" do
+    parse_tree = ParseTree.new( :+, ParseTree.new(:*, 2, ParseTree.new(:*, 2, 2)), ParseTree.new(:*, 2, 2) )            
+    parse_tree.height.should == 4
+  end
+  
+  it "should compute height for a complex nested ParseTree with a heavier right side" do
+    parse_tree = ParseTree.new( :+, ParseTree.new(:*, 2, 2), ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2) )            
+    parse_tree.height.should == 4
+  end
+  
+  it "should compute height for a very complex nested ParseTree" do
+    parse_tree = ParseTree.new( 
+      :+, ParseTree.new(:+, 1, ParseTree.new(:+, 1, 2) ), 
+        ParseTree.new(:+, ParseTree.new(:+, 1, 2), 
+          ParseTree.new(:*, ParseTree.new(:+, 1, 2), 
+            ParseTree.new(:+, 
+              ParseTree.new(:+, 1, 
+                ParseTree.new(:+, 1, 2)), 2) ) )
+    )
+    parse_tree.height.should == 7
+  end
+  
+  it "should compute height for a non-binary tree" do
+    parse_tree = ParseTree.new(
+      :foobar, Object, 1, 2, ParseTree.new(:+, 
+        ParseTree.new(:+, 1, 2), ParseTree.new(:+, 1, 
+          ParseTree.new(:+, 1, 2))), 4)
+          
+    parse_tree.height.should == 5
   end
 end

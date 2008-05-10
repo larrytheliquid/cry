@@ -12,3 +12,4 @@ module Cry
     @@mode = mode    
   end
 end
+# TODO: Undefine and redefine Object#cry_mode when changing modes

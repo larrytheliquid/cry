@@ -39,10 +39,13 @@ class ParseTree < Array
     node_arguments.map{|argument| argument.is_a?(ParseTree) ? argument.evaluate : argument }
   end
   
+  def height
+    (node_method ? 1 : 0) + self[1..size].to_a.map{|node| node.is_a?(ParseTree) ? node.height : 1 }.max.to_i
+  end
+  
   def inspect
     super.sub(/^\[/, "(").sub(/\]$/, ")")
   end
   alias_method :to_s, :inspect
 end
 # TODO: make a gem
-# TODO: ParseTree#height
