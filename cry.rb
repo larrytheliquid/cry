@@ -9,6 +9,7 @@ module Cry
   
   def self.mode=(mode)
     Object.send(:include, mode)
+    ParseTree.send(:include, LispParseTree) if mode == LispMode
     @@mode = mode    
   end
 end

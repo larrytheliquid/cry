@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__), "..", "cry")
 
-describe Cry::RubyMode, ".mode" do  
+describe Cry, ".mode" do  
   before(:each) do
     Cry.mode = Cry::RubyMode
   end
