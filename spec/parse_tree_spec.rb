@@ -84,21 +84,25 @@ describe ParseTree, "#node_object=" do
   end
 end
 
-describe ParseTree, "#evaluate_node_object" do
-  it "should be nil if the list is empty" do
-    ParseTree.new.evaluate_node_object.should be_nil
+describe ParseTree, "#evaluate_node" do
+  before(:each) do
+    @parse_tree = ParseTree.new
   end
   
-  it "should be nil if the list has one element" do
-    ParseTree.new(:self).evaluate_node_object.should be_nil
+  it "should be nil if the node is nil" do
+    @parse_tree.send(:evaluate_node, nil).should be_nil
   end
   
-  it "should be the second element if the list has more than one element, and it is a terminal" do
-    ParseTree.new(:+, 1, 2).evaluate_node_object.should == 1
+  it "should be nil if the node is an uninitialized ParseTree" do
+    @parse_tree.send(:evaluate_node, ParseTree.new).should be_nil
   end
   
-  it "should be the second element evaluated if the list has more than one element, and it is a ParseTree" do
-    ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2).evaluate_node_object.should == 3
+  it "should be the evaluated node if the everything is a terminal" do
+    @parse_tree.send(:evaluate_node, ParseTree.new(:+, 1, 2)).should == 3
+  end
+  
+  it "should be the recursively evaluated node if something is a ParseTree" do
+    @parse_tree.send(:evaluate_node, ParseTree.new(:+, ParseTree.new(:+, 1, 2), 2)).should == 5
   end
 end
 
@@ -191,28 +195,6 @@ describe ParseTree, "#node_arguments=" do
     parse_tree = ParseTree.new(:foobar, Object, 1, 2, 3)
     parse_tree.node_arguments = [4, 5]
     parse_tree.node_arguments.should == [4, 5]
-  end
-end
-
-describe ParseTree, "#evaluate_node_arguments" do
-  it "should be empty if the list is empty" do
-    ParseTree.new.evaluate_node_arguments.should be_empty
-  end
-  
-  it "should be emtpy if the list has one element" do
-    ParseTree.new(:self).evaluate_node_arguments.should be_empty
-  end
-  
-  it "should be empty if the list has two elements" do
-    ParseTree.new(:to_s, 1).evaluate_node_arguments.should be_empty
-  end
-  
-  it "should return the remainder of the elements if the list has more than two elements, and its elements only have terminals" do
-    ParseTree.new(:new, Array, 2, 1).evaluate_node_arguments.should == [2, 1]
-  end
-  
-  it "should return the remainder of the elements evaluated if the list has more than two elements, and its elements have ParseTrees" do
-    ParseTree.new(:new, Array, 2, ParseTree.new(:+, 1, 2)).evaluate_node_arguments.should == [2, 3]
   end
 end
 
