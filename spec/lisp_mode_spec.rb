@@ -26,6 +26,11 @@ describe ParseTree, "#to_lisp" do
     p.to_lisp.should == "(+ 1 2)"
   end
   
+  it "should turn underscores in method names to dashes" do
+    p = ParseTree.new(:to_s, 1)
+    p.to_lisp.should == "(to-s 1)"
+  end
+  
   it "should work with ParseTree arguments" do
     p = ParseTree.new( :+, 1, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2) )
     p.to_lisp.should == "(+ 1 (* (* 2 2) 2))"

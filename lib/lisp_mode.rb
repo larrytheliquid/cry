@@ -35,7 +35,11 @@ module Cry
     end
     
     def to_lisp
-      "(#{node_method} #{node_object.is_a?(ParseTree) ? node_object.to_lisp : node_object.inspect} #{node_arguments.map{|a| a.is_a?(ParseTree) ? a.to_lisp : a.inspect }})"
+      parse_tree = []
+      parse_tree << node_method.to_s.gsub("_", "-")
+      parse_tree << (node_object.is_a?(ParseTree) ? node_object.to_lisp : node_object.inspect )
+      parse_tree << node_arguments.map{|a| a.is_a?(ParseTree) ? a.to_lisp : a.inspect } unless node_arguments.empty?
+      "(#{parse_tree.join(" ")})"
     end
   end
 end
