@@ -12,7 +12,7 @@ class ParseTree < Array
   end
   
   def node_method=(node_method)
-    self[0] = node_method
+    self[0] = node_method.to_sym
   end
   
   def node_object
@@ -47,3 +47,4 @@ private
   end
 end
 # TODO: make a gem
+# TODO: maybe namespace ParseTree

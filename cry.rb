@@ -15,3 +15,5 @@ module Cry
 end
 
 Cry.mode = Cry::RubyMode
+# TODO: Update documentation to mention access to all of Array's methods, including Enumerable
+# TODO: Add an open source licence
