@@ -103,4 +103,8 @@ describe Cry, ".require_rlisp" do
   it "should evaluae the code as Ruby with Lisp-like syntax" do
     Cry.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example.rlisp")).should == [4, 4, 4, 4, 4]
   end
+  
+  it "should work when not specifying rlisp extension" do
+    Cry.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example")).should == [4, 4, 4, 4, 4]
+  end
 end

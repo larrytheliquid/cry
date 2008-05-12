@@ -7,9 +7,8 @@ module Cry
       
       module ClassMethods
         def require_rlisp(file_path)
-          File.open(file_path) do |file|
-            ParseTree.from_rlisp(file.read).evaluate
-          end
+          file_path << ".rlisp" unless file_path =~ /\.rlisp$/
+          File.open(file_path) {|file| ParseTree.from_rlisp(file.read).evaluate }
         end        
       end
     end
