@@ -20,83 +20,83 @@ describe Object, "#e" do
   end
 end
 
-describe ParseTree, "#to_rlisp" do  
+describe Cry::ParseTree, "#to_rlisp" do  
   it "should use parantheses instead of brackets, and not use colons or commas" do
-    p = ParseTree.new(:+, 1, 2)
+    p = Cry::ParseTree.new(:+, 1, 2)
     p.to_rlisp.should == "(+ 1 2)"
   end
   
   it "should turn underscores in method names to dashes" do
-    p = ParseTree.new(:to_s, 1)
+    p = Cry::ParseTree.new(:to_s, 1)
     p.to_rlisp.should == "(to-s 1)"
   end
   
-  it "should work with ParseTree arguments" do
-    p = ParseTree.new( :+, 1, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2) )
+  it "should work with Cry::ParseTree arguments" do
+    p = Cry::ParseTree.new( :+, 1, Cry::ParseTree.new(:*, Cry::ParseTree.new(:*, 2, 2), 2) )
     p.to_rlisp.should == "(+ 1 (* (* 2 2) 2))"
   end
   
-  it "should work with a ParseTree object" do
-    p = ParseTree.new( :+, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2), 1 )
+  it "should work with a Cry::ParseTree object" do
+    p = Cry::ParseTree.new( :+, Cry::ParseTree.new(:*, Cry::ParseTree.new(:*, 2, 2), 2), 1 )
     p.to_rlisp.should == "(+ (* (* 2 2) 2) 1)"
   end
 end
 
-describe ParseTree, ".from_rlisp" do  
+describe Cry::ParseTree, ".from_rlisp" do  
   it "should work with parantheses instead of brackets, and no colons or commas" do
-    p = ParseTree.new(:+, 1, 2)
-    ParseTree.from_rlisp("(+ 1 2)").should == p
+    p = Cry::ParseTree.new(:+, 1, 2)
+    Cry::ParseTree.from_rlisp("(+ 1 2)").should == p
   end
   
   it "should work with more than one character names" do
-    p = ParseTree.new(:new, Array, 2, 1)
-    ParseTree.from_rlisp("(new Array 2 1)").should == p
+    p = Cry::ParseTree.new(:new, Array, 2, 1)
+    Cry::ParseTree.from_rlisp("(new Array 2 1)").should == p
   end
   
-  it "should work with ParseTree arguments" do
-    p = ParseTree.new( :+, 1, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2) )
-    ParseTree.from_rlisp("(+ 1 (* (* 2 2) 2))").should == p
+  it "should work with Cry::ParseTree arguments" do
+    p = Cry::ParseTree.new( :+, 1, Cry::ParseTree.new(:*, Cry::ParseTree.new(:*, 2, 2), 2) )
+    Cry::ParseTree.from_rlisp("(+ 1 (* (* 2 2) 2))").should == p
   end
   
-  it "should work with ParseTree arguments, and spacing" do
-    p = ParseTree.new( :+, 1, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2) )
-    ParseTree.from_rlisp("(   + 1 (* (* 2    2) 2)  )").should == p
+  it "should work with Cry::ParseTree arguments, and spacing" do
+    p = Cry::ParseTree.new( :+, 1, Cry::ParseTree.new(:*, Cry::ParseTree.new(:*, 2, 2), 2) )
+    Cry::ParseTree.from_rlisp("(   + 1 (* (* 2    2) 2)  )").should == p
   end
   
-  it "should work with a ParseTree object" do
-    p = ParseTree.new( :+, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2), 1 )
-    ParseTree.from_rlisp("(+ (* (* 2 2) 2) 1)").should == p
+  it "should work with a Cry::ParseTree object" do
+    p = Cry::ParseTree.new( :+, Cry::ParseTree.new(:*, Cry::ParseTree.new(:*, 2, 2), 2), 1 )
+    Cry::ParseTree.from_rlisp("(+ (* (* 2 2) 2) 1)").should == p
   end
   
-  it "should work with a ParseTree object, and spacing" do
-    p = ParseTree.new( :+, ParseTree.new(:*, ParseTree.new(:*, 2, 2), 2), 1 )
-    ParseTree.from_rlisp(" ( + (* (  * 2 2 ) 2) 1  )").should == p
+  it "should work with a Cry::ParseTree object, and spacing" do
+    p = Cry::ParseTree.new( :+, Cry::ParseTree.new(:*, Cry::ParseTree.new(:*, 2, 2), 2), 1 )
+    Cry::ParseTree.from_rlisp(" ( + (* (  * 2 2 ) 2) 1  )").should == p
   end
   
   it "should work with method names that have underscores" do
-    p = ParseTree.new(:to_s, 1)
-    ParseTree.from_rlisp("(to_s 1)").should == p
+    p = Cry::ParseTree.new(:to_s, 1)
+    Cry::ParseTree.from_rlisp("(to_s 1)").should == p
   end
   
   it "should turn dashes in method names to underscores" do
-    p = ParseTree.new(:to_s, 1)
-    ParseTree.from_rlisp("(to-s 1)").should == p
+    p = Cry::ParseTree.new(:to_s, 1)
+    Cry::ParseTree.from_rlisp("(to-s 1)").should == p
   end
   
   it "should not turn subtract into underscore" do
-    p = ParseTree.new(:-, 4, 2)
-    ParseTree.from_rlisp("(- 4 2)").should == p
+    p = Cry::ParseTree.new(:-, 4, 2)
+    Cry::ParseTree.from_rlisp("(- 4 2)").should == p
   end
   
   it "should work with newline and tab characters" do
-    p = ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) )
-    ParseTree.from_rlisp("(+ 1 \n(* 2 2)\t)").should == p
+    p = Cry::ParseTree.new( :+, 1, Cry::ParseTree.new(:*, 2, 2) )
+    Cry::ParseTree.from_rlisp("(+ 1 \n(* 2 2)\t)").should == p
   end
 end
 
 describe Cry, ".require_rlisp" do
-  it "should use ParseTree.from_rlisp" do
-    ParseTree.should_receive(:from_rlisp).and_return(stub_everything("parse tree"))
+  it "should use Cry::ParseTree.from_rlisp" do
+    Cry::ParseTree.should_receive(:from_rlisp).and_return(stub_everything("parse tree"))
     Cry.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example.rlisp"))
   end
   
