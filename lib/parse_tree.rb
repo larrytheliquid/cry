@@ -48,4 +48,3 @@ module Cry
     end
   end
 end
-# TODO: make a gem
