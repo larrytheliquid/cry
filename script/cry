@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+$LOAD_PATH << File.dirname(__FILE__) + '/..'
+
+require 'cry'
+
+Cry.mode = Cry::LispMode
+Cry.repl

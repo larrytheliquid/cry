@@ -1,3 +1,4 @@
+require 'readline'
 module Cry
   module LispMode  
     module CryMethods
@@ -9,6 +10,26 @@ module Cry
         def require_rlisp(file_path)
           file_path << ".rlisp" unless file_path =~ /\.rlisp$/
           File.open(file_path) {|file| ParseTree.from_rlisp(file.read).evaluate }
+        end
+        
+        # repl stolen from Bus Scheme: http://github.com/technomancy/bus-scheme/tree/master
+        def repl
+          loop do
+            puts begin
+                   input = Readline.readline('> ')
+                   exit if input.nil? # only Ctrl-D produces nil here it seems
+                   begin # allow for multiline input
+                     result = ParseTree.from_rlisp(input).evaluate.inspect
+                   end
+                   Readline::HISTORY.push(input)
+                   result
+                 rescue Interrupt
+                   'Type "exit" or press Ctrl-D to leave Cry.'
+                 rescue StandardError => e
+                   "You made me Cry =(\n" +
+                     "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+                 end
+          end
         end        
       end
     end
