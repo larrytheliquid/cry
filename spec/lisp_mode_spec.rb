@@ -94,13 +94,13 @@ describe ParseTree, ".from_rlisp" do
   end
 end
 
-describe ParseTree, ".require_rlisp" do
+describe Cry, ".require_rlisp" do
   it "should use ParseTree.from_rlisp" do
     ParseTree.should_receive(:from_rlisp).and_return(stub_everything("parse tree"))
-    ParseTree.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example.rlisp"))
+    Cry.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example.rlisp"))
   end
   
   it "should evaluae the code as Ruby with Lisp-like syntax" do
-    ParseTree.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example.rlisp")).should == [4, 4, 4, 4, 4]
+    Cry.require_rlisp(File.join(File.dirname(__FILE__), "fixtures", "example.rlisp")).should == [4, 4, 4, 4, 4]
   end
 end
