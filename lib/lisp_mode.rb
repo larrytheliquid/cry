@@ -81,4 +81,4 @@ module Cry
     end
   end
 end
-# TODO: script/cry
+# TODO: Extract LispMode into a separate project with a Cry submodule... named Crysp

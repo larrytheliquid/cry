@@ -254,6 +254,11 @@ describe Cry::ParseTree, "#evaluate, for complex mixed parameters" do
     Cry::ParseTree.new(:call, lambda{|from, backwards_greeting| Cry::ParseTree.new(:+, Cry::ParseTree.new(:join, Cry::ParseTree.new(:reverse, backwards_greeting), " "), from).evaluate }, " from lisp", ["world", "hello"]).evaluate.should == "hello world from lisp"
   end
   
+  it "should work with block parameters as lambdas" do
+    pending " "
+    Cry::ParseTree.new(:map, [1, 2, 3], lambda{|element| element.to_s }).evaluate.should == ["1", "2", "3"]
+  end
+  
   it "should work with the main 'self' runtime" do    
     Cry::ParseTree.new(:instance_variable_set, self, '@parse_tree', 'Cry::ParseTree.new(:*, Cry::ParseTree.new(:+, 1, 3), 23).evaluate' ).evaluate
     Cry::ParseTree.new(:eval, Kernel, @parse_tree).evaluate.should == 92
