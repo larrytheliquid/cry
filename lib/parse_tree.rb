@@ -1,11 +1,21 @@
 module Cry
   class ParseTree < Array
     def initialize(*args)
-      super(args.to_ary)
+      super args.to_ary
     end
   
     def evaluate
-      evaluate_node(node_object).send( *node_arguments.map{|argument| evaluate_node(argument) }.insert(0, node_method) )
+      evaluated_node_object = evaluate_node(node_object)
+      raw_send_arguments = node_arguments.map{|argument| evaluate_node(argument) }.insert(0, node_method)
+      evaluated_node_object.send *raw_send_arguments
+    rescue ArgumentError => original_error
+      begin
+        standard_send_arguments = raw_send_arguments
+        block_send_argument = raw_send_arguments.pop
+        evaluated_node_object.send *standard_send_arguments, &block_send_argument
+      rescue Exception
+        raise original_error
+      end
     end
   
     def node_method

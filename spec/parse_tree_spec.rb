@@ -255,8 +255,15 @@ describe Cry::ParseTree, "#evaluate, for complex mixed parameters" do
   end
   
   it "should work with block parameters as lambdas" do
+    Cry::ParseTree.new(:inject, [1, 2, 3], 0, lambda{|sum, i| sum + i }).evaluate.should == 6
+  end
+  
+  it "should raise the original error if the block parameters as lambda attempt failes" do
+    lambda { Cry::ParseTree.new(:inject, [1, 2, 3], 0, "not a Proc").evaluate }.should raise_error(ArgumentError)
+  end
+  
+  it "should be able to create new classes" do
     pending " "
-    Cry::ParseTree.new(:map, [1, 2, 3], lambda{|element| element.to_s }).evaluate.should == ["1", "2", "3"]
   end
   
   it "should work with the main 'self' runtime" do    
