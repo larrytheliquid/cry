@@ -1,62 +1,82 @@
 = Cry
  
-A CommonLisp CLOS-like ParseTree in Ruby... read it and weep.
+A CommonLisp CLOS-like parse tree library for Ruby... read (and write) it and weep.
 
-For example, you could create a ParseTree like so:
+For example, you could create a parse tree like so:
  
-  parse_tree = ParseTree.new(:+, 1, 3)
+  parse_tree = Cry::ParseTree.new(:+, 1, 3)
   
 ... then evaluate it:
 
 	parse_tree.evaluate #	=> 4
  
-... You can also create and evaluate more complex ParseTrees:
+... You can also create and evaluate more complex parse trees:
 
-	ParseTree.new( :+, ParseTree.new( :+, 1, ParseTree.new(:*, 2, 2) ), ParseTree.new(:+, 1, 3) ).evaluate # => 9
+	Cry::ParseTree.new( :+, Cry::ParseTree.new( :+, 1, Cry::ParseTree.new(:*, 2, 2) ), Cry::ParseTree.new(:+, 1, 3) ).evaluate # => 9
 	
-... Keep on reading, you are moments away from this glory:
+== Lineage
 
-  e(:call, lambda{|from, backwards_greeting| e(:+, e(:join, e(:reverse, backwards_greeting), " "), from) }, " from lisp", ["world", "hello"]) # => "hello world from lisp"
+  Cry::ParseTree just inherits from Array, so you can use all of Array's convenient methods for manipulating your ParseTrees too.
  
 == Parameter order
 
 The first parameter is the method as a String or Symbol, this never changes.
 	
-The second parameter is the object that the method will be called on. This can either be a normal object, or an unevaluated ParseTree for delayed recursive evaluation.
+The second parameter is the object that the method will be called on. This can either be a normal object, or an unevaluated Cry::ParseTree for delayed recursive evaluation.
 	
-Any subsequent parameters can either be normal objects, or ParseTrees, and will be passed as arguments to the method call.
+Any subsequent parameters can either be normal objects, or Cry::ParseTrees, and will be passed as arguments to the method call.
  
 == Usage
  
   require 'cry'
- 
-By default no mode is set. Use ParseTrees in this mode as described above in this case:
 
-	ParseTree.new(:*, ParseTree.new(:+, 1, 3).evaluate, 23).evaluate # => 92
-
-To make using the ParseTrees more enjoyable, change to LispMode:
+	Cry::ParseTree.new(:*, Cry::ParseTree.new(:+, 1, 3), 23).evaluate # => 92
  
-  Cry.mode = Cry::LispMode
- 
-Now you can use an 'e' method to evaluate ParseTrees:
- 
-  e(:*, e(:+, 1, 3), 23) # => 92
- 
-This is equivalent to the following CLOS pseudocode:
+This is similar to the following Lisp:
  
 	(* (+ 1 3) 23) # => 92
 	
-Note: The difference is that in the Ruby version, the + method is actually called on the 1 object, whereas in Lisp the + method would be a global function. However, when using CLOS the parameter order syntax is nearly identical to the Ruby version presented here.
-	
-In Lisp, you can do things in the global namespace:
+Take note that ParseTree's second parameter is always your object (be it a class or not).
 
-	(setf parse-tree '(* (+ 1 3) 23))
-	(eval parse-tree) # => 92
+The method specified will be called on the object, similar to CLOS.
 	
-If you really want to Cry, you can imitate this:
+To distinguish Cry::ParseTree objects from Arrays when using inspect, they are denoted by parentheses:
 
-	e(:instance_variable_set, self, '@parse_tree', 'e(:*, e(:+, 1, 3), 23)')
-	e(:eval, Kernel, @parse_tree) # => 92
+  Cry::ParseTree.new(:<<, [1], 2).inspect # => "(:<<, [1], 2)"
+
+
+Realize that you have access to all of Ruby, so you can do crazy things like this:
+
+	Cry::ParseTree.new(:instance_variable_set, self, '@parse_tree', 'Cry::ParseTree.new(:*, Cry::ParseTree.new(:+, 1, 3), 23).evaluate').evaluate
+	Cry::ParseTree.new(:eval, Kernel, @parse_tree).evaluate # => 92
+	
+== Manipulation
+
+The nice thing is that the parse trees are lazily evaluated. This means you can change them around before evaluations. 
+
+  parse_tree = Cry::ParseTree.new(:+, 1, 3)
+  
+  parse_tree.node_method # => :+
+  parse_tree.node_object # => 1
+  parse_tree.node_arguments # => [3]
+  
+  parse_tree.node_method = :*
+  parse_tree.node_object = 2
+  parse_tree.node_arguments = [4]
+  
+  parse_tree.evaluate # => 8
+
+Also note that evaluate is not a destructive method.
+
+  parse_tree.evaluate # => 8
+  parse_tree.node_object = 3
+  parse_tree.evaluate # => 12
+	
+== Blocks
+	
+To use methods that accept a block, just use a Proc for your last argument:
+
+  Cry::ParseTree.new(:inject, [1, 2, 3], 0, lambda{|sum, i| sum + i }).evaluate # => 6
 	
 == Author
 

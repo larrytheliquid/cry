@@ -65,7 +65,8 @@ describe Cry::ParseTree, "#evaluate, for complex mixed parameters" do
   end
   
   it "should be able to create new classes" do
-    pending " "
+    Cry::ParseTree.new(:instance_variable_set, self, '@klass', Class.new ).evaluate
+    @klass.should be_kind_of(Class)
   end
   
   it "should work with the main 'self' runtime" do    
