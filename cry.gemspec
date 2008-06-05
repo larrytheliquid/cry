@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = "cry"
+  s.name = "Cry"
   s.version = "0.0.2"
   s.date = "2008-06-04"
   s.summary = "A lazily evaluated and easy to use Ruby parse tree."

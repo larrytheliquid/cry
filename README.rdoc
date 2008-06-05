@@ -16,7 +16,7 @@ For example, you could create a parse tree like so:
 	
 == Lineage
 
-  Cry::ParseTree just inherits from Array, so you can use all of Array's convenient methods for manipulating your ParseTrees too.
+Cry::ParseTree just inherits from Array, so you can use all of Array's convenient methods for manipulating your ParseTrees too.
  
 == Parameter order
 
